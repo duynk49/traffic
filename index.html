@@ -22,7 +22,7 @@
             height: 100%;
             overflow: hidden;
             background-color: #0b1120;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             user-select: none;
         }
         #simCanvas {
@@ -46,43 +46,91 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             z-index: 10;
             pointer-events: auto;
+            font-size: 13px;
+        }
+        .hud-panel .btn-sm,
+        .hud-panel .btn-group-sm > .btn {
+            font-size: 12px;
+            padding: 3px 8px;
+        }
+        .text-xs {
+            font-size: 11px;
         }
         .top-bar {
             position: absolute;
-            top: 10px;
-            left: 12px;
-            right: 12px;
-            padding: 8px 16px;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            height: 48px;
+            padding: 0 12px;
+        }
+        .top-bar h6 {
+            font-size: 13px;
+            white-space: nowrap;
         }
         .left-sidebar {
             position: absolute;
-            top: 68px;
-            left: 12px;
-            width: 345px;
-            max-height: calc(100vh - 80px);
+            top: 64px;
+            left: 8px;
+            width: 288px;
+            max-height: calc(100vh - 72px);
             overflow-y: auto;
-            padding: 12px;
+            padding: 8px 10px;
         }
         .right-sidebar {
             position: absolute;
-            top: 68px;
-            right: 12px;
-            width: 360px;
-            max-height: calc(100vh - 80px);
+            top: 64px;
+            right: 8px;
+            width: 288px;
+            max-height: calc(100vh - 72px);
             overflow-y: auto;
-            padding: 12px;
+            padding: 8px 10px;
+        }
+        .panel-hidden {
+            display: none;
+        }
+        .panel-section {
+            border-top: 1px solid var(--hud-border);
+            padding: 7px 0 3px;
+        }
+        .panel-section summary {
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 4px;
+        }
+        .dock {
+            position: absolute;
+            left: 50%;
+            bottom: 10px;
+            transform: translateX(-50%);
+            padding: 4px 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
         }
         .bottom-legend {
+            display: none;
             position: absolute;
-            bottom: 12px;
-            left: 370px;
-            right: 385px;
-            padding: 8px 14px;
-            pointer-events: auto;
+            bottom: 56px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(620px, calc(100vw - 32px));
+            padding: 10px 14px;
+        }
+        .bottom-legend.open {
+            display: block;
+        }
+        .bottom-legend kbd {
+            font-size: 11px;
         }
         @media (max-width: 1200px) {
-            .bottom-legend { display: none; }
-            .left-sidebar, .right-sidebar { width: 300px; font-size: 0.82rem; }
+            .left-sidebar, .right-sidebar { width: 260px; }
+        }
+        @media (max-width: 1000px) {
+            .top-bar h6 { display: none; }
         }
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -90,26 +138,26 @@
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 4px; }
         
         .stat-box {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 6px;
-            padding: 4px 10px;
-            min-width: 95px;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            white-space: nowrap;
         }
         .stat-val {
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 14px;
             font-variant-numeric: tabular-nums;
         }
         .stat-lbl {
-            font-size: 0.68rem;
-            text-transform: uppercase;
+            font-size: 11px;
             color: #94a3b8;
-            letter-spacing: 0.4px;
+        }
+        #phaseTitle {
+            font-size: 13px;
         }
         .signal-lamp {
-            width: 18px;
-            height: 18px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             display: inline-block;
             background: #1e293b;
@@ -121,14 +169,14 @@
         .signal-lamp.green.active { background: #10b981; box-shadow: 0 0 12px #10b981; }
         
         .log-box {
-            height: 135px;
+            height: 104px;
             overflow-y: auto;
             background: rgba(2, 6, 23, 0.75);
             border: 1px solid rgba(148, 163, 184, 0.18);
             border-radius: 6px;
             padding: 6px 8px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.74rem;
+            font-family: ui-monospace, Menlo, Consolas, monospace;
+            font-size: 11px;
         }
         .log-entry {
             margin-bottom: 3px;
@@ -137,10 +185,13 @@
             padding-bottom: 2px;
         }
         .lane-badge {
-            font-size: 0.68rem;
+            font-size: 11px;
             padding: 2px 6px;
             border-radius: 4px;
             font-weight: 600;
+        }
+        .form-range {
+            height: 1rem;
         }
         .form-range::-webkit-slider-thumb {
             background: #06b6d4;
@@ -159,24 +210,18 @@
     <!-- 2.5D Isometric Canvas -->
     <canvas id="simCanvas"></canvas>
 
-    <!-- TOP TELEMETRY & CAMERA BAR -->
-    <div class="hud-panel top-bar d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-info text-dark fw-bold px-2 py-1"><i class="bi bi-cpu-fill me-1"></i>2.5D AI TRAFFIC</span>
-            <div>
-                <h6 class="mb-0 fw-bold text-white">Siêu Giao Lộ Việt Nam (14 Làn Chính × 4 Làn Phụ)</h6>
-                <small class="text-secondary" style="font-size: 0.72rem;">Mô phỏng luồn lách đa tác tử & Đèn giao thông thích ứng mật độ thực</small>
-            </div>
-        </div>
+    <!-- TOP TELEMETRY BAR -->
+    <div class="hud-panel top-bar d-flex align-items-center justify-content-between gap-3">
+        <h6 class="mb-0 fw-bold text-white"><i class="bi bi-cpu-fill text-info me-1"></i>Siêu Giao Lộ VN · 14×4 làn</h6>
 
         <!-- Live Metrics -->
-        <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="d-flex align-items-center gap-3">
             <div class="stat-box">
-                <div class="stat-lbl">Phương tiện</div>
+                <div class="stat-lbl">Xe</div>
                 <div class="stat-val text-info" id="metricActive">0</div>
             </div>
             <div class="stat-box">
-                <div class="stat-lbl">Xe máy / Ô tô</div>
+                <div class="stat-lbl">Máy/Ô tô</div>
                 <div class="stat-val text-warning" id="metricSplit">0 / 0</div>
             </div>
             <div class="stat-box">
@@ -184,50 +229,26 @@
                 <div class="stat-val text-success" id="metricThroughput">0</div>
             </div>
             <div class="stat-box">
-                <div class="stat-lbl">Chờ TB (giây)</div>
+                <div class="stat-lbl">Chờ TB</div>
                 <div class="stat-val text-light" id="metricWait">0.0s</div>
             </div>
             <div class="stat-box">
-                <div class="stat-lbl">Độ hỗn loạn</div>
+                <div class="stat-lbl">Hỗn loạn</div>
                 <div class="stat-val text-danger" id="metricChaos">42%</div>
             </div>
-            <div class="stat-box" style="min-width: 70px;">
+            <div class="stat-box">
                 <div class="stat-lbl">FPS</div>
                 <div class="stat-val text-secondary" id="metricFPS">60</div>
             </div>
-        </div>
-
-        <!-- View & Debug Toggles -->
-        <div class="btn-group btn-group-sm" role="group">
-            <button type="button" class="btn btn-outline-info active" id="btnViewIso" onclick="setCameraMode('iso')">
-                <i class="bi bi-box-fill me-1"></i>2.5D Iso
-            </button>
-            <button type="button" class="btn btn-outline-info" id="btnViewTop" onclick="setCameraMode('top')">
-                <i class="bi bi-bounding-box me-1"></i>2D Top
-            </button>
-            <button type="button" class="btn btn-outline-secondary" onclick="resetCamera()" title="Đặt lại góc nhìn">
-                <i class="bi bi-arrows-fullscreen"></i>
-            </button>
-            <button type="button" class="btn btn-outline-warning active" id="btnToggleSensors" onclick="toggleOverlay('sensors')" title="Hiện vùng cảm biến đếm xe">
-                <i class="bi bi-broadcast"></i> Cảm biến
-            </button>
-            <button type="button" class="btn btn-outline-light" id="btnToggleVectors" onclick="toggleOverlay('vectors')" title="Hiện vector vận tốc & luồn lách">
-                <i class="bi bi-arrow-up-right-circle"></i> Vector
-            </button>
         </div>
     </div>
 
     <!-- LEFT SIDEBAR: TRAFFIC PARAMETERS & VIETNAMESE CHAOS -->
     <div class="hud-panel left-sidebar">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="fw-bold text-info small text-uppercase"><i class="bi bi-sliders me-1"></i>Kịch bản & Mật độ giao thông</span>
-            <button class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 0.72rem;" onclick="togglePause()" id="btnPause">
-                <i class="bi bi-pause-fill"></i> Tạm dừng
-            </button>
-        </div>
+        <div class="fw-bold text-info small text-uppercase mb-2"><i class="bi bi-sliders me-1"></i>Kịch bản</div>
 
         <!-- Scenarios -->
-        <div class="row g-1 mb-3">
+        <div class="row g-1 mb-2">
             <div class="col-6">
                 <button class="btn btn-sm btn-warning w-100 fw-semibold text-dark" onclick="applyPreset('rush')">
                     <i class="bi bi-fire me-1"></i>Giờ cao điểm
@@ -240,7 +261,7 @@
             </div>
             <div class="col-6">
                 <button class="btn btn-sm btn-outline-danger w-100" onclick="applyPreset('swarm')">
-                    <i class="bi bi-hurricane me-1"></i>Bão xe máy (85%)
+                    <i class="bi bi-hurricane me-1"></i>Bão xe máy
                 </button>
             </div>
             <div class="col-6">
@@ -251,7 +272,9 @@
         </div>
 
         <!-- Sliders -->
-        <div class="mb-2">
+        <details class="panel-section" open>
+            <summary>Thông số luồng xe</summary>
+        <div class="mb-1">
             <div class="d-flex justify-content-between small">
                 <span>Lưu lượng Đại lộ chính (Đông-Tây)</span>
                 <span class="text-info fw-bold" id="lblMainSpawn">Rất cao (90%)</span>
@@ -259,7 +282,7 @@
             <input type="range" class="form-range" id="sliderMainSpawn" min="15" max="100" value="88" oninput="updateParams()">
         </div>
 
-        <div class="mb-2">
+        <div class="mb-1">
             <div class="d-flex justify-content-between small">
                 <span>Lưu lượng Đường nhánh (Bắc-Nam)</span>
                 <span class="text-info fw-bold" id="lblCrossSpawn">Cao (65%)</span>
@@ -267,7 +290,7 @@
             <input type="range" class="form-range" id="sliderCrossSpawn" min="10" max="100" value="65" oninput="updateParams()">
         </div>
 
-        <div class="mb-2">
+        <div class="mb-1">
             <div class="d-flex justify-content-between small">
                 <span>Tỷ lệ Xe máy (Đặc trưng VN)</span>
                 <span class="text-warning fw-bold" id="lblMotoRatio">74%</span>
@@ -275,7 +298,7 @@
             <input type="range" class="form-range" id="sliderMotoRatio" min="30" max="90" value="74" oninput="updateParams()">
         </div>
 
-        <div class="mb-2">
+        <div class="mb-1">
             <div class="d-flex justify-content-between small">
                 <span>Độ luồn lách / Điền vào chỗ trống</span>
                 <span class="text-danger fw-bold" id="lblAggression">85%</span>
@@ -283,7 +306,7 @@
             <input type="range" class="form-range" id="sliderAggression" min="10" max="100" value="85" oninput="updateParams()">
         </div>
 
-        <div class="mb-3">
+        <div class="mb-1">
             <div class="d-flex justify-content-between small">
                 <span>Góc nghiêng Camera 2.5D (Pitch)</span>
                 <span class="text-secondary" id="lblPitch">0.58</span>
@@ -291,9 +314,11 @@
             <input type="range" class="form-range" id="sliderPitch" min="38" max="95" value="58" oninput="updatePitch(this.value)">
         </div>
 
+        </details>
+
         <!-- Vietnamese Behavior Checkboxes -->
-        <div class="p-2 rounded mb-3" style="background: rgba(30,41,59,0.55); border: 1px solid rgba(255,255,255,0.06);">
-            <div class="small fw-bold text-warning mb-1"><i class="bi bi-lightning-charge-fill me-1"></i>Hành vi giao thông Việt Nam</div>
+        <details class="panel-section">
+            <summary>Hành vi giao thông Việt Nam</summary>
             <div class="form-check form-switch small mb-1">
                 <input class="form-check-input" type="checkbox" id="chkRedCreep" checked onchange="updateParams()">
                 <label class="form-check-label" for="chkRedCreep">Xe máy nhích dần & tràn vạch khi đèn đỏ còn 3s</label>
@@ -306,13 +331,14 @@
                 <input class="form-check-input" type="checkbox" id="chkGapFilter" checked onchange="updateParams()">
                 <label class="form-check-label" for="chkGapFilter">Xe máy luồn qua khe hở giữa các ô tô đang dừng</label>
             </div>
-        </div>
+        </details>
 
         <!-- Instant Spawn Actions -->
-        <div class="small fw-bold text-light mb-2"><i class="bi bi-plus-circle-dotted me-1"></i>Tác động tức thời vào giao lộ</div>
+        <details class="panel-section" open>
+            <summary>Tác động tức thời</summary>
         <div class="d-grid gap-1">
             <button class="btn btn-sm btn-danger fw-bold" onclick="spawnEmergencyAmbulance()">
-                <i class="bi bi-truck-front-fill me-1"></i>Triệu hồi Xe Cứu Thương (Ưu tiên đèn xanh)
+                <i class="bi bi-truck-front-fill me-1"></i>Gọi xe cứu thương
             </button>
             <div class="row g-1">
                 <div class="col-6">
@@ -326,19 +352,20 @@
                     </button>
                 </div>
             </div>
-            <button class="btn btn-sm btn-outline-secondary mt-1" onclick="clearIntersectionBox()">
-                <i class="bi bi-shield-check me-1"></i>Cảnh sát phân luồng (Giải tỏa tâm ngã tư)
+            <button class="btn btn-sm btn-outline-secondary" onclick="clearIntersectionBox()" title="Cảnh sát phân luồng, giải tỏa xe kẹt ở tâm ngã tư">
+                <i class="bi bi-shield-check me-1"></i>Giải tỏa tâm ngã tư
             </button>
         </div>
+        </details>
     </div>
 
     <!-- RIGHT SIDEBAR: ADAPTIVE TRAFFIC LIGHT CONTROLLER (SCATS / MAX-PRESSURE) -->
     <div class="hud-panel right-sidebar">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="fw-bold text-success small text-uppercase"><i class="bi bi-stoplights-fill me-1"></i>Trung tâm Điều khiển Đèn AI</span>
+            <span class="fw-bold text-success small text-uppercase"><i class="bi bi-stoplights-fill me-1"></i>Điều khiển đèn</span>
             <div class="form-check form-switch mb-0 small">
                 <input class="form-check-input" type="checkbox" id="chkAdaptiveAI" checked onchange="updateParams()">
-                <label class="form-check-label text-info fw-semibold" for="chkAdaptiveAI">Tự động (AI)</label>
+                <label class="form-check-label text-info fw-semibold" for="chkAdaptiveAI">AI tự động</label>
             </div>
         </div>
 
@@ -348,7 +375,7 @@
                 <i class="bi bi-broadcast-pin fs-5 text-white"></i>
                 <div class="small lh-sm">
                     <strong class="text-white d-block">ƯU TIÊN KHẨN CẤP (PREEMPTION)</strong>
-                    <span id="emergencyText" class="text-light" style="font-size:0.74rem;">Phát hiện xe cứu thương! Đang ép pha đèn xanh...</span>
+                    <span id="emergencyText" class="text-light text-xs">Phát hiện xe cứu thương! Đang ép pha đèn xanh...</span>
                 </div>
             </div>
         </div>
@@ -359,11 +386,11 @@
                 <div>
                     <div class="small text-secondary">Pha hiện tại:</div>
                     <div class="fw-bold text-white" id="phaseTitle">PHA 1: ĐẠI LỘ ĐÔNG - TÂY</div>
-                    <div class="text-info" style="font-size: 0.73rem;" id="phaseSubTitle">Đi thẳng + Rẽ phải + Rẽ trái linh hoạt</div>
+                    <div class="text-info text-xs" id="phaseSubTitle">Đi thẳng + Rẽ phải + Rẽ trái linh hoạt</div>
                 </div>
                 <div class="text-end">
-                    <div class="display-6 fw-bold mb-0 lh-1 text-warning" id="phaseCountdown">28s</div>
-                    <small class="text-secondary" style="font-size: 0.68rem;" id="phaseBounds">Min: 12s | Max: 55s</small>
+                    <div class="fs-3 fw-bold mb-0 lh-1 text-warning" id="phaseCountdown">28s</div>
+                    <small class="text-secondary text-xs" id="phaseBounds">Min: 12s | Max: 55s</small>
                 </div>
             </div>
 
@@ -375,7 +402,7 @@
                         <span class="signal-lamp yellow" id="lampEW_Y"></span>
                         <span class="signal-lamp green active" id="lampEW_G"></span>
                     </div>
-                    <div class="fw-semibold text-light" style="font-size:0.75rem;">ĐẠI LỘ ĐÔNG-TÂY (14 Làn)</div>
+                    <div class="fw-semibold text-light text-xs">Đông-Tây</div>
                 </div>
                 <div class="col-6">
                     <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
@@ -383,7 +410,7 @@
                         <span class="signal-lamp yellow" id="lampNS_Y"></span>
                         <span class="signal-lamp green" id="lampNS_G"></span>
                     </div>
-                    <div class="fw-semibold text-light" style="font-size:0.75rem;">ĐƯỜNG NHÁNH BẮC-NAM (4 Làn)</div>
+                    <div class="fw-semibold text-light text-xs">Bắc-Nam</div>
                 </div>
             </div>
         </div>
@@ -391,7 +418,7 @@
         <!-- Queue Pressure Bars (Max-Pressure Algorithm) -->
         <div class="mb-2">
             <div class="d-flex justify-content-between align-items-center small mb-1">
-                <span class="text-secondary">Áp lực hàng chờ Đông-Tây (P<sub>EW</sub>):</span>
+                <span class="text-secondary">Áp lực Đông-Tây <i class="bi bi-info-circle" title="Công thức AI: P = Σ(Trọng_số_xe × (1 + Thời_gian_chờ/12)). Tự động cộng thêm +4s xanh nếu áp lực đang xả cao hơn hướng đỏ, hoặc cắt sớm pha xanh nếu hết xe."></i></span>
                 <span class="fw-bold text-info" id="valPressureEW">0 điểm (0 xe)</span>
             </div>
             <div class="progress mb-2" style="height: 8px; background: #1e293b;">
@@ -399,36 +426,73 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center small mb-1">
-                <span class="text-secondary">Áp lực hàng chờ Bắc-Nam (P<sub>NS</sub>):</span>
+                <span class="text-secondary">Áp lực Bắc-Nam</span>
                 <span class="fw-bold text-warning" id="valPressureNS">0 điểm (0 xe)</span>
             </div>
             <div class="progress mb-1" style="height: 8px; background: #1e293b;">
                 <div class="progress-bar bg-warning" id="barPressureNS" style="width: 30%"></div>
             </div>
-            <div class="text-secondary" style="font-size: 0.7rem;">
-                *Công thức AI: <code>P = Σ(Trọng_số_xe × (1 + Thời_gian_chờ/12))</code>. Tự động cộng thêm +4s xanh nếu áp lực đang xả cao hơn hướng đỏ, hoặc cắt sớm pha xanh nếu hết xe.
-            </div>
         </div>
 
         <!-- Manual Phase Force Button -->
         <div class="d-flex gap-1 mb-2">
-            <button class="btn btn-xs btn-outline-info w-100 py-1" style="font-size:0.75rem;" onclick="forceSwitchPhase()">
-                <i class="bi bi-arrow-repeat me-1"></i>Chuyển pha đèn ngay
+            <button class="btn btn-sm btn-outline-info w-100" onclick="forceSwitchPhase()">
+                <i class="bi bi-arrow-repeat me-1"></i>Chuyển pha
             </button>
-            <button class="btn btn-xs btn-outline-success w-100 py-1" style="font-size:0.75rem;" onclick="extendCurrentGreen(8)">
-                <i class="bi bi-plus-lg me-1"></i>+8s Đèn Xanh
+            <button class="btn btn-sm btn-outline-success w-100" onclick="extendCurrentGreen(8)">
+                <i class="bi bi-plus-lg me-1"></i>+8s xanh
             </button>
         </div>
 
         <!-- AI Decision Log -->
-        <div class="small fw-bold text-light mb-1"><i class="bi bi-terminal me-1"></i>Nhật ký quyết định của AI Đèn Giao Thông</div>
+        <div class="small fw-bold text-light mb-1"><i class="bi bi-terminal me-1"></i>Nhật ký AI</div>
         <div class="log-box" id="aiLogBox"></div>
     </div>
 
-    <!-- BOTTOM ROAD TOPOLOGY LEGEND -->
-    <div class="hud-panel bottom-legend d-flex align-items-center justify-content-between flex-wrap gap-2">
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="small fw-bold text-info"><i class="bi bi-signpost-split me-1"></i>Cấu trúc mỗi bên đường chính (7 Làn):</span>
+    <!-- FLOATING DOCK: SIMULATION, VIEW & PANEL CONTROLS -->
+    <div class="hud-panel dock">
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="togglePause()" id="btnPause" title="Tạm dừng / Tiếp tục (Space)">
+            <i class="bi bi-pause-fill"></i> Tạm dừng
+        </button>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-info active" id="btnViewIso" onclick="setCameraMode('iso')" title="Góc nhìn 2.5D (1)">
+                <i class="bi bi-box-fill me-1"></i>2.5D Iso
+            </button>
+            <button type="button" class="btn btn-outline-info" id="btnViewTop" onclick="setCameraMode('top')" title="Góc nhìn từ trên xuống (2)">
+                <i class="bi bi-bounding-box me-1"></i>2D Top
+            </button>
+            <button type="button" class="btn btn-outline-secondary" onclick="resetCamera()" title="Đặt lại góc nhìn (R)">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-warning active" id="btnToggleSensors" onclick="toggleOverlay('sensors')" title="Hiện vùng cảm biến đếm xe">
+                <i class="bi bi-broadcast"></i> Cảm biến
+            </button>
+            <button type="button" class="btn btn-outline-light" id="btnToggleVectors" onclick="toggleOverlay('vectors')" title="Hiện vector vận tốc & luồn lách">
+                <i class="bi bi-arrow-up-right-circle"></i> Vector
+            </button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary active" id="btnPanelLeft" onclick="togglePanel('left')" title="Ẩn / hiện cột trái ([)">
+                <i class="bi bi-layout-sidebar"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary active" id="btnPanelRight" onclick="togglePanel('right')" title="Ẩn / hiện cột phải (])">
+                <i class="bi bi-layout-sidebar-reverse"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" onclick="toggleFullscreen()" title="Toàn màn hình (F)">
+                <i class="bi bi-arrows-fullscreen"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" onclick="toggleHelp()" title="Chú giải & phím tắt (?)">
+                <i class="bi bi-question-lg"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- HELP POPOVER: ROAD TOPOLOGY LEGEND & CONTROLS -->
+    <div class="hud-panel bottom-legend" id="helpPopover">
+        <div class="small fw-bold text-info mb-1"><i class="bi bi-signpost-split me-1"></i>Cấu trúc mỗi bên đường chính (7 Làn)</div>
+        <div class="d-flex align-items-center gap-1 flex-wrap mb-2">
             <span class="lane-badge" style="background:#14532d; color:#86efac;">Con lươn giữa</span>
             <span class="lane-badge" style="background:#1e3a8a; color:#93c5fd;">3 Làn Ô tô nhanh (Express)</span>
             <span class="lane-badge" style="background:#475569; color:#f8fafc;">Dải phân cách phụ</span>
@@ -437,8 +501,11 @@
             <span class="lane-badge" style="background:#7c2d12; color:#fdba74;">1 Làn trong cùng Chỉ Xe Máy</span>
             <span class="lane-badge" style="background:#334155; color:#cbd5e1;">Vỉa hè</span>
         </div>
+        <div class="small text-secondary mb-1">
+            <i class="bi bi-hand-index me-1"></i>Kéo hoặc vuốt hai ngón để di chuyển • Chụm hai ngón hoặc cuộn chuột để phóng to/thu nhỏ • <strong>Shift + Kéo</strong> để xoay 360°
+        </div>
         <div class="small text-secondary">
-            <i class="bi bi-mouse me-1"></i>Kéo chuột để di chuyển • Cuộn chuột để Phóng to/Thu nhỏ • <strong>Shift + Kéo</strong> để Xoay 360°
+            <i class="bi bi-keyboard me-1"></i><kbd>Space</kbd> tạm dừng • <kbd>1</kbd> <kbd>2</kbd> đổi góc nhìn • <kbd>R</kbd> đặt lại • <kbd>[</kbd> <kbd>]</kbd> ẩn/hiện cột • <kbd>F</kbd> toàn màn hình • <kbd>?</kbd> trợ giúp
         </div>
     </div>
 
@@ -473,6 +540,11 @@
 
         const canvas = document.getElementById('simCanvas');
         const ctx = canvas.getContext('2d');
+
+        // Retina sharpness: 1.5x keeps frame cost well under budget, full 2x nearly exhausts it
+        const MAX_RENDER_DPR = 1.5;
+        let viewW = window.innerWidth;  // Viewport size in CSS pixels; all drawing uses these units
+        let viewH = window.innerHeight;
 
         const WORLD_EXTENT = 1350; // Distance from center (0,0) to road ends
         const MAIN_ROAD_HALF = 226;
@@ -1278,8 +1350,8 @@
             const rx = wx * cosY - wy * sinY;
             const ry = wx * sinY + wy * cosY;
 
-            const sx = canvas.width * 0.5 + camera.panX + rx * camera.zoom;
-            const sy = canvas.height * 0.5 + camera.panY + (ry * camera.pitch - wz * 1.15) * camera.zoom;
+            const sx = viewW * 0.5 + camera.panX + rx * camera.zoom;
+            const sy = viewH * 0.5 + camera.panY + (ry * camera.pitch - wz * 1.15) * camera.zoom;
             return { x: sx, y: sy, depth: ry };
         }
 
@@ -1716,7 +1788,7 @@
 
                 // Glowing lamp + Countdown text
                 ctx.fillStyle = hexCol;
-                ctx.font = `bold ${Math.max(9, Math.round(11 * camera.zoom))}px Segoe UI, monospace`;
+                ctx.font = `bold ${Math.max(9, Math.round(11 * camera.zoom))}px -apple-system, 'Segoe UI', sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(`${countVal}s`, headPos.x, headPos.y);
@@ -1808,7 +1880,7 @@
         }
 
         function renderScene() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, viewW, viewH);
 
             // 1. Ground & Road Topology
             renderRoadInfrastructure();
@@ -1932,6 +2004,23 @@
             const btn = document.getElementById('btnPause');
             btn.innerHTML = simParams.paused ? '<i class="bi bi-play-fill"></i> Tiếp tục' : '<i class="bi bi-pause-fill"></i> Tạm dừng';
             btn.classList.toggle('btn-warning', simParams.paused);
+        }
+
+        function togglePanel(side) {
+            const hidden = document.querySelector(`.${side}-sidebar`).classList.toggle('panel-hidden');
+            document.getElementById(side === 'left' ? 'btnPanelLeft' : 'btnPanelRight').classList.toggle('active', !hidden);
+        }
+
+        function toggleHelp(force) {
+            document.getElementById('helpPopover').classList.toggle('open', force);
+        }
+
+        function toggleFullscreen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
         }
 
         function applyPreset(preset) {
@@ -2085,15 +2174,68 @@
 
         canvas.addEventListener('contextmenu', e => e.preventDefault());
 
+        function setZoom(value) {
+            camera.zoom = Math.max(0.32, Math.min(2.4, value));
+        }
+
+        // Mouse wheels report wheelDeltaY in multiples of 120; trackpads do not
+        function isTrackpadWheel(e) {
+            if (e.wheelDeltaY === undefined) return e.deltaMode === 0;
+            return e.deltaX !== 0 || e.wheelDeltaY % 120 !== 0;
+        }
+
         canvas.addEventListener('wheel', e => {
             e.preventDefault();
-            const factor = e.deltaY < 0 ? 1.1 : 0.9;
-            camera.zoom = Math.max(0.32, Math.min(2.4, camera.zoom * factor));
+            if (e.ctrlKey) {
+                // Pinch gesture: Chrome and Firefox report it as ctrl + wheel
+                setZoom(camera.zoom * Math.exp(-e.deltaY * 0.01));
+            } else if (isTrackpadWheel(e)) {
+                camera.panX -= e.deltaX;
+                camera.panY -= e.deltaY;
+            } else if (e.deltaY !== 0) {
+                setZoom(camera.zoom * (e.deltaY < 0 ? 1.1 : 0.9));
+            }
         }, { passive: false });
 
+        // Safari reports pinch as gesture events instead of ctrl + wheel
+        let gestureStartZoom = camera.zoom;
+        canvas.addEventListener('gesturestart', e => {
+            e.preventDefault();
+            gestureStartZoom = camera.zoom;
+        });
+        canvas.addEventListener('gesturechange', e => {
+            e.preventDefault();
+            setZoom(gestureStartZoom * e.scale);
+        });
+
+        // Keyboard Shortcuts
+        const keyActions = {
+            ' ': togglePause,
+            '1': () => setCameraMode('iso'),
+            '2': () => setCameraMode('top'),
+            'r': resetCamera,
+            '[': () => togglePanel('left'),
+            ']': () => togglePanel('right'),
+            'f': toggleFullscreen,
+            '?': () => toggleHelp(),
+            'escape': () => toggleHelp(false)
+        };
+
+        window.addEventListener('keydown', e => {
+            if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+            const action = keyActions[e.key.toLowerCase()];
+            if (!action) return;
+            e.preventDefault(); // Also stops Space from re-clicking the focused button
+            action();
+        });
+
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            const dpr = Math.min(window.devicePixelRatio || 1, MAX_RENDER_DPR);
+            viewW = window.innerWidth;
+            viewH = window.innerHeight;
+            canvas.width = Math.round(viewW * dpr);
+            canvas.height = Math.round(viewH * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
         window.addEventListener('resize', resizeCanvas);
 
