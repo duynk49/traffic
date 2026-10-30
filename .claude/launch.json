@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "proto-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8123", "--bind", "127.0.0.1", "--directory", "/private/tmp/claude-501/-Users-duy-code-games-traffic/1cc32cfd-a6f0-41a1-a94b-8fe6316da995/scratchpad"],
+      "port": 8123
+    }
+  ]
+}
