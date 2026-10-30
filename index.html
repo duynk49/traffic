@@ -1741,6 +1741,13 @@
             ctx.fill();
         }
 
+        // Lamp order in the signal head, top to bottom
+        const SIGNAL_LAMPS = [
+            { sig: 'RED',    on: '#ef4444', off: '#4c1414' },
+            { sig: 'YELLOW', on: '#facc15', off: '#4a3a0a' },
+            { sig: 'GREEN',  on: '#22c55e', off: '#0f3d22' }
+        ];
+
         // Draw 3D Overhead Traffic Signal Gantries with Live Countdown Numbers on Canvas
         function renderSignalGantries() {
             const ewColor = getSignalColorForAxis('EW');
@@ -1772,26 +1779,52 @@
                 ctx.lineTo(armEnd.x, armEnd.y);
                 ctx.stroke();
 
-                // Signal Head Box + Countdown Badge at mid-arm
-                const headPos = worldToScreen((g.x + g.armX) * 0.5, (g.y + g.armY) * 0.5, 54);
-                const hexCol = g.sig === 'GREEN' ? '#10b981' : (g.sig === 'YELLOW' ? '#f59e0b' : '#ef4444');
+                // Three-lamp Signal Head hanging from mid-arm
+                const headPos = worldToScreen((g.x + g.armX) * 0.5, (g.y + g.armY) * 0.5, 52);
+                const litLamp = SIGNAL_LAMPS.find(lamp => lamp.sig === g.sig);
+                const lampR = Math.max(3.5, 5 * camera.zoom);
+                const lampGap = lampR * 2.5;
+                const headW = lampR * 3;
+                const headH = lampGap * 3 + lampR * 0.5;
 
-                ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-                ctx.strokeStyle = hexCol;
-                ctx.lineWidth = 1.8;
-                const bw = 34 * camera.zoom;
-                const bh = 18 * camera.zoom;
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.96)';
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.roundRect(headPos.x - bw * 0.5, headPos.y - bh * 0.5, bw, bh, 4);
+                ctx.roundRect(headPos.x - headW * 0.5, headPos.y, headW, headH, lampR * 0.6);
                 ctx.fill();
                 ctx.stroke();
 
-                // Glowing lamp + Countdown text
-                ctx.fillStyle = hexCol;
+                SIGNAL_LAMPS.forEach((lamp, i) => {
+                    const isLit = lamp === litLamp;
+                    ctx.fillStyle = isLit ? lamp.on : lamp.off;
+                    ctx.shadowColor = lamp.on;
+                    ctx.shadowBlur = isLit ? lampR * 3 : 0;
+                    ctx.beginPath();
+                    ctx.arc(headPos.x, headPos.y + lampGap * (i + 0.5) + lampR * 0.25, lampR, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                ctx.shadowBlur = 0;
+
+                // Countdown Badge beside the head
+                const bw = 34 * camera.zoom;
+                const bh = 18 * camera.zoom;
+                const badgeX = headPos.x + headW * 0.5 + 3 + bw * 0.5;
+                const badgeY = headPos.y + headH * 0.5;
+
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+                ctx.strokeStyle = litLamp.on;
+                ctx.lineWidth = 1.8;
+                ctx.beginPath();
+                ctx.roundRect(badgeX - bw * 0.5, badgeY - bh * 0.5, bw, bh, 4);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = litLamp.on;
                 ctx.font = `bold ${Math.max(9, Math.round(11 * camera.zoom))}px -apple-system, 'Segoe UI', sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(`${countVal}s`, headPos.x, headPos.y);
+                ctx.fillText(`${countVal}s`, badgeX, badgeY);
             });
         }
 
